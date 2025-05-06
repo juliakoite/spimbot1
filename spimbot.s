@@ -77,20 +77,65 @@ main:
   		sw     $a0, VELOCITY($zero)     # drive
 
 
-		lui   $t0, 0xffff   
-		ori   $t0, $t0, 0x200c    
+slabs:
+li $t1, 90
+        sw $t1, ANGLE
+        li $t1, 1
+        sw $t1, ANGLE_CONTROL
+        li $t2, 0
+        sw $t2, VELOCITY
 
-		lw $s0, 4($t0)
-		andi $s3, $s0, 0xFF#x
-		srl $t4, $s0, 8 
-		andi $s4, $t4, 0xFF   #y
+        # YOUR CODE GOES HERE!!!!!!
 
-		sll $t4, $s4, 8      
-		or $t5, $s3, $t4  
+        lw      $t0, BOT_X            # $t0 = bot x (52)
+        lw      $t1, BOT_Y            # $t1 = bot y (44)
 
-		lui   $t3, 0xffff
-		ori   $t3, $t3, 0x2010
-		sw    $t5, 0($t3)  
+		la		$t2, slab_buf
+		sw		$t2, GET_SLABS
+
+		lw		$t3, 4($t2)
+		andi	$t4, $t3, 0xFF	#slab row (14)
+		srl		$t5, $t3, 8
+		andi	$t5, $t5, 0xFF	#slab column (3)
+
+		li		$t6, 8
+		mul 	$t7, $t4, $t6	#slab row in pix (112)
+		mul		$t8, $t5, $t6	#slab col in pix (24)
+
+		sub 	$t9, $t7, $t1	# (-20)
+		abs 	$t9, $t9		# (20)
+		li		$t6, 1000
+		mul		$t4, $t9, $t6	# (20000)
+		addi    $t4, $t4, -4000
+
+        li $t1, 270
+        sw $t1, ANGLE
+        li $t1, 1
+        sw $t1, ANGLE_CONTROL
+        li $t2, 10
+        sw $t2, VELOCITY	
+
+		sw $t4, TIMER
+
+
+
+
+
+
+		# lui   $t0, 0xffff   
+		# ori   $t0, $t0, 0x200c    
+
+		# lw $s0, 4($t0)
+		# andi $s3, $s0, 0xFF#x
+		# srl $t4, $s0, 8 
+		# andi $s4, $t4, 0xFF   #y
+
+		# sll $t4, $s4, 8      
+		# or $t5, $s3, $t4  
+
+		# lui   $t3, 0xffff
+		# ori   $t3, $t3, 0x2010
+		# sw    $t5, 0($t3)  
 
 
 		#jal print_xy
@@ -106,13 +151,6 @@ main:
 	#CHECK FOR FEEDBACK INTERRUPT SOMEWHERE
 	#figuring out get slabs
 
-
-	# lw $t1, 0($s0)   
-	# lw $t3, 4($t1)
-	# andi $t4, $t2, 0xFF 
-	# sw $t1, 8($t0)
-	# sw $t2, 8($s1)
-	#SLABS:
 
 
 #get_slabs:
